@@ -1,0 +1,22 @@
+#データ読み込み
+p1 <-read.xlsx("Power_statics_1.xlsx")
+
+#分散分析
+install.packages("rstatix")
+anova_test(p1, ChL.Beta~P,ID,within=P)
+
+#多重比較(対応あり/パラメトリック検定)
+pairwise.t.test(data$yield, data$treatment, paired = TRUE, p.adj = "none")
+
+#多重比較(対応あり/ノンメトリック検定)
+pairwise.wilcox.test(p2$ChL.Beta, p2$P, paired = TRUE, p.adj = "none")
+
+#図の作成
+p1$P <-as.factor(p1$P)
+boxdata = function( x ) {
+     v = c( min(x), quantile(x, 0.25), mean(x), quantile(x, 0.75), max(x) )
+     names( v ) = c( "ymin", "lower", "middle", "upper", "ymax" )
+     v
+ }
+ggplot(p1, aes( x = P, y = ChZ.Theta, group = P )) +
+  geom_boxplot(outlier.colour = NA)+ stat_summary( fun.data = boxdata, geom = "boxplot" )+geom_jitter( width = 0.3, size = 1, alpha = 0.3 )	+scale_y_continuous(breaks=seq(0,100,length=11),limits=c(0,100))
